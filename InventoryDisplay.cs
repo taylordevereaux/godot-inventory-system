@@ -39,8 +39,7 @@ public class InventoryDisplay : GridContainer
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        base._UnhandledInput(@event);
-        if (@event.IsActionReleased("ui_left_mouse"))
+        if (@event is InputEventMouseButton mouseEvent && mouseEvent.IsActionReleased("ui_left_mouse"))
         {
             if (_inventory.DragData != null)
             {
