@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://Items/Item.cs" type="Script" id=1]
+[ext_resource path="res://Items/Sword.png" type="Texture" id=2]
+
+[resource]
+script = ExtResource( 1 )
+Name = "Sword"
+Texture = ExtResource( 2 )
