@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="inventory"
-run/main_scene="res://InventoryContainer.tscn"
+run/main_scene="res://MultiInventoryDisplay.tscn"
 config/icon="res://icon.png"
 
 [display]

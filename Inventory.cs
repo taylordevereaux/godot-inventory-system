@@ -1,8 +1,12 @@
 using Godot;
 using System;
+using System.Linq;
 
 public class Inventory : Resource
 {
+    public Guid Id => _id;
+    private Guid _id;
+
     [Signal]
     public delegate void ItemChanged(int[] indexes);
 
@@ -10,6 +14,46 @@ public class Inventory : Resource
     public Item[] Items { get; set; } = new Item[9];
 
     public ItemDragData DragData { get; set; }
+
+    public Inventory()
+    {}
+
+    public Inventory(Guid id)
+    {
+        _id = id;
+    }
+
+    
+
+    public bool CanAddItem()
+    {
+        return Items.Any(x => x == null);
+    }
+
+    public bool TryAddItem(Item item)
+    {
+        if (CanAddItem())
+        {
+            int index = -1;
+            for (var i = 0; i < Items.Length; ++i)
+            {
+                if (Items[i] == null)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("Could not find unused inventory index");
+            
+            SetItem(index, item);
+
+            return true;
+        }
+        else
+            return false;
+    }
 
     public Item SetItem(int itemIndex, Item item)
     {

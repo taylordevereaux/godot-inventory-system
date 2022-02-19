@@ -2,7 +2,8 @@ using Godot;
 using System;
 
 public class InventoryDisplay : GridContainer
-{
+{   
+    public Inventory Inventory => _inventory;
     private Inventory _inventory;
 
     // Declare member variables here. Examples:
@@ -12,10 +13,15 @@ public class InventoryDisplay : GridContainer
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        _inventory = GD.Load<Inventory>("res://Inventory.tres");
+    }
+
+    public void SetInventory(Inventory inventory)
+    {
+        _inventory = inventory;
         _inventory.Connect(nameof(Inventory.ItemChanged), this, nameof(OnInventoryItemChanged));
         UpdateInventoryDisplay();
     }
+
     public void OnInventoryItemChanged(int[] indexes)
     {
         foreach (int index in indexes)

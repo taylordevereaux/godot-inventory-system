@@ -4,13 +4,17 @@ using System;
 public class InventorySlotDisplay : CenterContainer
 {
     private TextureRect _itemTextureRect;
-    private Inventory _inventory;
+    private InventoryDisplay _inventoryDisplay;
+    private InventoryManager _inventoryManager;
+
+    private Guid InventoryId => _inventoryDisplay.Inventory.Id;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         _itemTextureRect = GetNode<TextureRect>("ItemTextureRect");    
-        _inventory = GD.Load<Inventory>("res://Inventory.tres");  
+        _inventoryDisplay = GetParent<InventoryDisplay>();
+        _inventoryManager = GD.Load<InventoryManager>("res://InventoryManager.tres");
     }
 
     public void DisplayItem(Item item)
@@ -25,18 +29,15 @@ public class InventorySlotDisplay : CenterContainer
         }
     }
 
-
     public override object GetDragData(Vector2 position)
     {
         int index = GetIndex();
-        var item = _inventory.RemoveItem(index);
+        var item = _inventoryManager.GetItem(InventoryId, index);
         
-        // var data = new Godot.Object();
-        // data.Set("Item", item);
-        // data.Set("Index", index);
         var data = new ItemDragData() {
             Index = index,
-            Item = item
+            Item = item,
+            SourceInventoryId = InventoryId
         };
 
         if (item != null) 
@@ -44,9 +45,11 @@ public class InventorySlotDisplay : CenterContainer
             var dragPreview = new TextureRect();
             dragPreview.Texture = item.Texture;
             SetDragPreview(dragPreview);
+
+            DisplayItem(null);
         }
 
-        _inventory.DragData = data;
+        _inventoryManager.DragData = data;
 
         return data;
     }
@@ -61,17 +64,14 @@ public class InventorySlotDisplay : CenterContainer
         if (data is ItemDragData itemDragData)
         {
             var myIndex = GetIndex();
-            var myItem = _inventory.Items[myIndex];
-            // if (myItem != null && myItem.Name == itemDragData.Item.Name)
-            _inventory.SwapItems(myIndex, itemDragData.Index);
-            _inventory.SetItem(myIndex, itemDragData.Item);
+            _inventoryManager.SwapItems(itemDragData.SourceInventoryId, itemDragData.Index, InventoryId, myIndex);
         }
-        
-        _inventory.DragData = null;
+        _inventoryManager.DragData = null;
     }
 }
 public class ItemDragData : Godot.Object
 {
     public int Index { get; set; }
     public Item Item { get; set; }
+    public Guid SourceInventoryId { get; set; }
 }
